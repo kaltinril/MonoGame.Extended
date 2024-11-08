@@ -562,14 +562,21 @@ public struct Matrix3x2 : IEquatable<Matrix3x2>
     {
         var det = 1.0f / matrix.Determinant();
 
-        matrix.M11 = matrix.M22 * det;
-        matrix.M12 = -matrix.M12 * det;
+        if (float.IsInfinity(det))  // Det(M) = 0
+        {
+            matrix = Identity;
+            return;
+        }
 
-        matrix.M21 = -matrix.M21 * det;
-        matrix.M22 = matrix.M11 * det;
-
-        matrix.M31 = (matrix.M32 * matrix.M21 - matrix.M31 * matrix.M22) * det;
-        matrix.M32 = -(matrix.M32 * matrix.M11 - matrix.M31 * matrix.M12) * det;
+        // The new 3x2 matrix is the first and second column of the inverse of the 3x3 matrix given by adding the third column (0, 0, 1) to the input matrix
+        matrix = new(
+            matrix.M22 * det,
+            -matrix.M12 * det,
+            -matrix.M21 * det,
+            matrix.M11 * det,
+            (matrix.M32 * matrix.M21 - matrix.M31 * matrix.M22) * det,
+            (matrix.M31 * matrix.M12 - matrix.M32 * matrix.M11) * det
+        );
     }
 
     /// <summary>
