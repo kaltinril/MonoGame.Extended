@@ -9,12 +9,14 @@ namespace MonoGame.Extended.Content
 {
     public static class ContentReaderExtensions
     {
+#if FNA || KNI
         private static readonly FieldInfo _contentReaderGraphicsDeviceFieldInfo = typeof(ContentReader).GetTypeInfo().GetDeclaredField("graphicsDevice");
 
         public static GraphicsDevice GetGraphicsDevice(this ContentReader contentReader)
         {
             return (GraphicsDevice)_contentReaderGraphicsDeviceFieldInfo.GetValue(contentReader);
         }
+#endif
 
         public static string RemoveExtension(string path)
         {
