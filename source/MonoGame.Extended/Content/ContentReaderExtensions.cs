@@ -9,12 +9,21 @@ namespace MonoGame.Extended.Content
 {
     public static class ContentReaderExtensions
     {
-        private static readonly FieldInfo _contentReaderGraphicsDeviceFieldInfo = typeof(ContentReader).GetTypeInfo().GetDeclaredField("graphicsDevice");
+		
+#if FNA
+		public static GraphicsDevice GetGraphicsDevice(this ContentReader contentReader)
+		{
+			var serviceProvider = contentReader.ContentManager.ServiceProvider;
+			var graphicsDeviceService = serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
+				   
+			if (graphicsDeviceService == null)
+			{
+				throw new InvalidOperationException("No Graphics Device Service");
+			}
 
-        public static GraphicsDevice GetGraphicsDevice(this ContentReader contentReader)
-        {
-            return (GraphicsDevice)_contentReaderGraphicsDeviceFieldInfo.GetValue(contentReader);
-        }
+			return graphicsDeviceService.GraphicsDevice;
+		}
+#endif
 
         public static string RemoveExtension(string path)
         {
